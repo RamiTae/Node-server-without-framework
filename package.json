@@ -1,0 +1,29 @@
+{
+  "name": "node-server-without-framework",
+  "description": "framework 없이 만들어보는 Node server",
+  "version": "0.0.1",
+  "main": "app.js",
+  "devDependencies": {},
+  "dependencies": {
+    "marked": "^4.0.12"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RamiTae/Node-server-without-framework.git"
+  },
+  "keywords": [
+    "node",
+    "NodeJs",
+    "server"
+  ],
+  "author": "rami.tae",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RamiTae/Node-server-without-framework/issues"
+  },
+  "homepage": "https://github.com/RamiTae/Node-server-without-framework#readme"
+}
