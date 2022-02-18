@@ -1,8 +1,8 @@
 const marked = require("marked");
 
-var http = require("http");
-var fs = require("fs");
-var path = require("path");
+const http = require("http");
+const fs = require("fs");
+const path = require("path");
 
 const PORT = 3000;
 const HTML_TEMPLATE = `
@@ -44,35 +44,37 @@ const makeHtmlForm = (contents) => {
 
 http
   .createServer(function (request, response) {
-    console.log("request ", request.url);
+    const requestUrl = request.url;
+    console.log({ requestUrl });
 
-    let filePath = "." + request.url;
-    if (filePath == "./") {
-      filePath = "./index.md";
-    }
+    try {
+      switch (requestUrl) {
+        case "/":
+          let filePath = "." + requestUrl;
+          if (filePath == "./") {
+            filePath = "./index.md";
+          }
 
-    fs.readFile(filePath, function (error, content) {
-      if (error) {
-        if (error.code == "ENOENT") {
+          fs.readFile(filePath, function (error, content) {
+            response.writeHead(200, { "Content-Type": CONTENT_TYPES.HTML });
+            const contents = marked.parse(content.toString());
+            response.end(makeHtmlForm(contents), "utf-8");
+          });
+          break;
+        default:
           fs.readFile("./404.md", function (error, content) {
             const contents = marked.parse(content.toString());
             response.writeHead(404, { "Content-Type": CONTENT_TYPES.HTML });
             response.end(makeHtmlForm(contents), "utf-8");
           });
-        } else {
-          response.writeHead(500);
-          response.end(
-            "Sorry, check with the site admin for error: " +
-              error.code +
-              " ..\n"
-          );
-        }
-      } else {
-        response.writeHead(200, { "Content-Type": CONTENT_TYPES.HTML });
-        const contents = marked.parse(content.toString());
-        response.end(makeHtmlForm(contents), "utf-8");
       }
-    });
+    } catch (error) {
+      response.writeHead(500, { "Content-Type": CONTENT_TYPES.JSON });
+      response.end(
+        "Sorry, check with the site admin for error: " + error.code + " ..\n",
+        "utf-8"
+      );
+    }
   })
   .listen(PORT);
 
