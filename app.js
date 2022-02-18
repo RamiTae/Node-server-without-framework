@@ -20,6 +20,24 @@ const HTML_TEMPLATE = `
   </body>
 </html>`;
 
+const CONTENT_TYPES = {
+  HTML: "text/html",
+  JS: "text/javascript",
+  CSS: "text/css",
+  JSON: "application/json",
+  PNG: "image/png",
+  JPG: "image/jpg",
+  GIF: "image/gif",
+  SVG: "image/svg+xml",
+  WAV: "audio/wav",
+  MP4: "video/mp4",
+  WOFF: "application/font-woff",
+  TTF: "application/font-ttf",
+  EOT: "application/vnd.ms-fontobject",
+  OTF: "application/font-otf",
+  WASM: "application/wasm",
+};
+
 const makeHtmlForm = (contents) => {
   return HTML_TEMPLATE.replace("{contents}", contents);
 };
@@ -33,31 +51,12 @@ http
       filePath = "./index.md";
     }
 
-    const extname = String(path.extname(filePath)).toLowerCase();
-    const mimeTypes = {
-      ".html": "text/html",
-      ".js": "text/javascript",
-      ".css": "text/css",
-      ".json": "application/json",
-      ".png": "image/png",
-      ".jpg": "image/jpg",
-      ".gif": "image/gif",
-      ".svg": "image/svg+xml",
-      ".wav": "audio/wav",
-      ".mp4": "video/mp4",
-      ".woff": "application/font-woff",
-      ".ttf": "application/font-ttf",
-      ".eot": "application/vnd.ms-fontobject",
-      ".otf": "application/font-otf",
-      ".wasm": "application/wasm",
-    };
-
     fs.readFile(filePath, function (error, content) {
       if (error) {
         if (error.code == "ENOENT") {
           fs.readFile("./404.md", function (error, content) {
             const contents = marked.parse(content.toString());
-            response.writeHead(404, { "Content-Type": "text/html" });
+            response.writeHead(404, { "Content-Type": CONTENT_TYPES.HTML });
             response.end(makeHtmlForm(contents), "utf-8");
           });
         } else {
@@ -69,9 +68,8 @@ http
           );
         }
       } else {
-        response.writeHead(200, { "Content-Type": "text/html" });
+        response.writeHead(200, { "Content-Type": CONTENT_TYPES.HTML });
         const contents = marked.parse(content.toString());
-        console.log(contents);
         response.end(makeHtmlForm(contents), "utf-8");
       }
     });
