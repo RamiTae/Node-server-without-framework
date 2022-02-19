@@ -42,6 +42,13 @@ const makeHtmlForm = (contents) => {
   return HTML_TEMPLATE.replace("{contents}", contents);
 };
 
+const sendResponse = (response) => {
+  return ({ state, contentType, contents, encoder = "utf-8" }) => {
+    response.writeHead(state, { "Content-Type": contentType });
+    response.end(contents, encoder);
+  };
+};
+
 http
   .createServer(function (request, response) {
     // console.log(request)
@@ -58,24 +65,38 @@ http
           }
 
           fs.readFile(filePath, function (error, content) {
-            response.writeHead(200, { "Content-Type": CONTENT_TYPES.HTML });
-            const contents = marked.parse(content.toString());
-            response.end(makeHtmlForm(contents), "utf-8");
+            const contents = makeHtmlForm(marked.parse(content.toString()));
+            sendResponse(response)({
+              state: 200,
+              contentType: CONTENT_TYPES.HTML,
+              contents,
+            });
+          });
+          break;
+        case "/api":
+          sendResponse(response)({
+            state: 200,
+            contentType: CONTENT_TYPES.JSON,
+            contents: "GET /api",
           });
           break;
         default:
           fs.readFile("./404.md", function (error, content) {
-            const contents = marked.parse(content.toString());
-            response.writeHead(404, { "Content-Type": CONTENT_TYPES.HTML });
-            response.end(makeHtmlForm(contents), "utf-8");
+            const contents = makeHtmlForm(marked.parse(content.toString()));
+            sendResponse(response)({
+              state: 404,
+              contentType: CONTENT_TYPES.HTML,
+              contents,
+            });
           });
       }
     } catch (error) {
-      response.writeHead(500, { "Content-Type": CONTENT_TYPES.JSON });
-      response.end(
-        "Sorry, check with the site admin for error: " + error.code + " ..\n",
-        "utf-8"
-      );
+      sendResponse(response)({
+        state: 500,
+        contentType: CONTENT_TYPES.JSON,
+        contents:
+          "Sorry, check with the site admin for error: " + error.code + " ..\n",
+      });
     }
   })
   .listen(PORT);
