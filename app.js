@@ -44,8 +44,10 @@ const makeHtmlForm = (contents) => {
 
 http
   .createServer(function (request, response) {
+    // console.log(request)
     const requestUrl = request.url;
-    console.log({ requestUrl });
+    const requstMethod = request.method;
+    console.log({ requestUrl, requstMethod });
 
     try {
       switch (requestUrl) {
