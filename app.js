@@ -61,7 +61,7 @@ http
         case "/": {
           let filePath = "." + requestUrl;
           if (filePath == "./") {
-            filePath = "./index.md";
+            filePath = "./pages/index.md";
           }
 
           fs.readFile(filePath, function (error, content) {
@@ -83,7 +83,7 @@ http
           break;
         }
         case "/error": {
-          fs.readFile("./404.md", function (error, content) {
+          fs.readFile("./pages/404.md", function (error, content) {
             const contents = makeHtmlForm(marked.parse(content.toString()));
             sendResponse(response)({
               state: 404,
@@ -94,7 +94,7 @@ http
           break;
         }
         default: {
-          let filePath = `.${requestUrl}.md`;
+          let filePath = `./pages${requestUrl}.md`;
 
           fs.readFile(filePath, function (error, content) {
             if (error) {
