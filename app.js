@@ -58,7 +58,7 @@ http
 
     try {
       switch (requestUrl) {
-        case "/":
+        case "/": {
           let filePath = "." + requestUrl;
           if (filePath == "./") {
             filePath = "./index.md";
@@ -73,14 +73,16 @@ http
             });
           });
           break;
-        case "/api":
+        }
+        case "/api": {
           sendResponse(response)({
             state: 200,
             contentType: CONTENT_TYPES.JSON,
             contents: "GET /api",
           });
           break;
-        default:
+        }
+        case "/error": {
           fs.readFile("./404.md", function (error, content) {
             const contents = makeHtmlForm(marked.parse(content.toString()));
             sendResponse(response)({
@@ -89,6 +91,27 @@ http
               contents,
             });
           });
+          break;
+        }
+        default: {
+          let filePath = `.${requestUrl}.md`;
+
+          fs.readFile(filePath, function (error, content) {
+            if (error) {
+              response.writeHead(302, {
+                Location: "/error",
+              });
+              return response.end();
+            }
+
+            const contents = makeHtmlForm(marked.parse(content.toString()));
+            sendResponse(response)({
+              state: 200,
+              contentType: CONTENT_TYPES.HTML,
+              contents,
+            });
+          });
+        }
       }
     } catch (error) {
       sendResponse(response)({
