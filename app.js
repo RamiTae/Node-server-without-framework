@@ -1,7 +1,8 @@
 const marked = require("marked");
 
 const http = require("http");
-const fs = require("fs");
+// const fs = require("fs");
+const fsPromise = require("fs/promises");
 const path = require("path");
 
 const PORT = 3000;
@@ -50,7 +51,7 @@ const sendResponse = (response) => {
 };
 
 http
-  .createServer(function (request, response) {
+  .createServer(async function (request, response) {
     // console.log(request)
     const requestUrl = request.url;
     const requestMethod = request.method;
@@ -59,18 +60,13 @@ http
     try {
       switch (requestUrl) {
         case "/": {
-          let filePath = "." + requestUrl;
-          if (filePath == "./") {
-            filePath = "./pages/index.md";
-          }
-
-          fs.readFile(filePath, function (error, content) {
-            const contents = makeHtmlForm(marked.parse(content.toString()));
-            sendResponse(response)({
-              state: 200,
-              contentType: CONTENT_TYPES.HTML,
-              contents,
-            });
+          const filePath = "./pages/index.md";
+          const fileData = await fsPromise.readFile(filePath);
+          const contents = makeHtmlForm(marked.parse(fileData.toString()));
+          sendResponse(response)({
+            state: 200,
+            contentType: CONTENT_TYPES.HTML,
+            contents,
           });
           break;
         }
@@ -83,34 +79,32 @@ http
           break;
         }
         case "/error": {
-          fs.readFile("./pages/404.md", function (error, content) {
-            const contents = makeHtmlForm(marked.parse(content.toString()));
-            sendResponse(response)({
-              state: 404,
-              contentType: CONTENT_TYPES.HTML,
-              contents,
-            });
+          const fileData = await fsPromise.readFile("./pages/404.md");
+          const contents = makeHtmlForm(marked.parse(fileData.toString()));
+          sendResponse(response)({
+            state: 404,
+            contentType: CONTENT_TYPES.HTML,
+            contents,
+          });
+          break;
+        }
+        case "/me": {
+          const filePath = `./pages/me.md`;
+          const fileData = await fsPromise.readFile(filePath);
+
+          const contents = makeHtmlForm(marked.parse(fileData.toString()));
+          sendResponse(response)({
+            state: 200,
+            contentType: CONTENT_TYPES.HTML,
+            contents,
           });
           break;
         }
         default: {
-          let filePath = `./pages${requestUrl}.md`;
-
-          fs.readFile(filePath, function (error, content) {
-            if (error) {
-              response.writeHead(302, {
-                Location: "/error",
-              });
-              return response.end();
-            }
-
-            const contents = makeHtmlForm(marked.parse(content.toString()));
-            sendResponse(response)({
-              state: 200,
-              contentType: CONTENT_TYPES.HTML,
-              contents,
-            });
+          response.writeHead(302, {
+            Location: "/error",
           });
+          return response.end();
         }
       }
     } catch (error) {
