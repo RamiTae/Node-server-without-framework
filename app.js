@@ -53,8 +53,8 @@ http
   .createServer(function (request, response) {
     // console.log(request)
     const requestUrl = request.url;
-    const requstMethod = request.method;
-    console.log({ requestUrl, requstMethod });
+    const requestMethod = request.method;
+    console.log({ requestUrl, requestMethod });
 
     try {
       switch (requestUrl) {
