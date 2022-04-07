@@ -3,7 +3,14 @@
   "description": "framework 없이 만들어보는 Node server",
   "version": "0.0.1",
   "main": "app.js",
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "**/*": "prettier --write --ignore-unknown"
+  },
   "devDependencies": {
+    "eslint": "^8.12.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.3.7",
     "prettier": "2.6.2"
   },
   "dependencies": {
@@ -11,7 +18,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "node app.js",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
