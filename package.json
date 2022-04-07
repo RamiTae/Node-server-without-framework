@@ -3,7 +3,9 @@
   "description": "framework 없이 만들어보는 Node server",
   "version": "0.0.1",
   "main": "app.js",
-  "devDependencies": {},
+  "devDependencies": {
+    "prettier": "2.6.2"
+  },
   "dependencies": {
     "marked": "^4.0.12"
   },
